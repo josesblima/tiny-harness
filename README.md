@@ -29,3 +29,9 @@ Ironically, I am not using AI except for helping me search documentation and occ
 - Compact context
 - Plan mode
 - Skills
+
+## Docs / Useful links
+[Ollama's Qwen3.8:27b](https://ollama.com/library/qwen3.8:27b)
+[Tool Calling in Ollama](https://docs.ollama.com/capabilities/tool-calling#python)
+[Project Layout Reference](https://realpython.com/ref/best-practices/project-layout/)
+[Chat API](https://docs.ollama.com/api/chat)

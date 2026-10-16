@@ -1,9 +1,11 @@
-from enum import Enum
-
 class ToolManager:
-    def read(self, path: str):
-        f = open(path)
-        return f.read()
+    @staticmethod
+    def read(path: str) -> str:
+        """Read a file.
 
-class Tool(Enum):
-    READ = 'read'
+        Args:
+            path: Relative path"""
+        with open(path) as f:
+            return f.read()
+
+ALL_TOOLS = [ToolManager.read]
