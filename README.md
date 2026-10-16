@@ -16,6 +16,7 @@ Ironically, I am not using AI except for helping me search documentation and occ
 - Harness with a basic loop that that saves and sends the whole conversation on each request
 - Ability to switch between models
 - Extremely basic tool call to read files
+- Tool to list directories, doesn't allow listing outside the project, can't list recursively for now
 
 ## TODO
 - Find a proper architecture so the project can grow in complexity without becoming spaghetti in only two commits

@@ -25,7 +25,7 @@ class Session:
                 response = chat(
                     model = self.model.value,
                     messages = self.messages,
-                    tools = [ToolManager.read]  # TODO implement this later when I have more than one tool
+                    tools = [ToolManager.read, ToolManager.list_dir]  # TODO implement this later when I have more than one tool
                 )
                 self.messages.append(response.message)
 
