@@ -3,13 +3,14 @@ from ollama import ChatResponse, Message
 from ollama import chat
 
 from tiny_harness.models.models import Model
-from tiny_harness.tools.tools import ToolManager, ALL_TOOLS
+from tiny_harness.tools.exceptions import ToolError
+from tiny_harness.tools.tools import ALL_TOOLS
 
 class Session:
     def __init__(self, *, model: Model = Model.QWEN38, messages: list[Message] | None = None, tools: list[Callable] | None = None):
         self.model = model
         self.messages = list(messages) if messages else []
-        self.tools = tools if tools else ALL_TOOLS
+        self.tools = tools if tools is not None else ALL_TOOLS
         self.tools_dic = {fn.__name__: fn for fn in self.tools}
 
     def run_interactive(self):
@@ -25,7 +26,7 @@ class Session:
                 response = chat(
                     model = self.model.value,
                     messages = self.messages,
-                    tools = [ToolManager.read, ToolManager.list_dir]  # TODO implement this later when I have more than one tool
+                    tools = self.tools
                 )
                 self.messages.append(response.message)
 
@@ -62,7 +63,9 @@ class Session:
             else:
                 try:
                     result = fn(**call.function.arguments)
-                except Exception as e:
+                except ToolError as e:
                     result = f'Error: {e}'
+                except Exception as e:
+                    result = f'Unexpected Error: {e}'
             self.messages.append(Message(role='tool', tool_name=call.function.name, content=str(result)))
         

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from tiny_harness.tools.exceptions import ToolError
+
 class ToolManager:
     @staticmethod
     def read(path: str) -> str:
@@ -30,4 +32,26 @@ class ToolManager:
         else:
             return f'The path "{path}" is not a valid path inside the current project.'
 
-ALL_TOOLS = [ToolManager.read, ToolManager.list_dir]
+    @staticmethod
+    def edit_file(path: str, old_str: str, new_str):
+        """Edit a file. Search and replace strings. If there is more than one string that matches the old_str, pass a bigger string.
+
+        Args:
+            path: Path to the file within the current working directory
+            old_str: Text to replace
+            new_str: New text"""
+        if not Path(path).resolve().is_relative_to(Path.cwd()):
+            raise ToolError(f'The path "{path}" is not a valid path inside the current project.')
+        
+        p = Path(path)
+        content = p.read_text()
+        count = content.count(old_str)
+        if count == 0:
+            raise ToolError(f'There are no strings that match old_str.')
+        if count > 1:
+            raise ToolError(f'There are multiple results to the old string, please give more context around it.')
+        
+        p.write_text(content.replace(old_str, new_str))
+        return f'The changes were successfully applied.'
+
+ALL_TOOLS = [ToolManager.read, ToolManager.list_dir, ToolManager.edit_file]
