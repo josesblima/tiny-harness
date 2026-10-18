@@ -32,6 +32,21 @@ class ToolManager:
             raise ToolError(f'The path "{path}" is not a valid path inside the current project.')
 
     @staticmethod
+    def write_file(path: str, content: str):
+        """Create a new file, or overwrite an existing one.
+
+        Args:
+            path: Path to the file within cwd. Parent directories will be created
+            content: Full content of the file"""
+        if not Path(path).resolve().is_relative_to(Path.cwd()):
+            raise ToolError(f'The path "{path}" is not a valid path inside the current project.')
+
+        p = Path(path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(content)
+        return f'The file "{path}" was written.'
+
+    @staticmethod
     def edit_file(path: str, old_str: str, new_str):
         """Edit a file. Search and replace strings. If there is more than one string that matches the old_str, pass a bigger string.
 
@@ -53,4 +68,4 @@ class ToolManager:
         p.write_text(content.replace(old_str, new_str))
         return f'The changes were successfully applied.'
 
-ALL_TOOLS = [ToolManager.read, ToolManager.list_dir, ToolManager.edit_file]
+ALL_TOOLS = [ToolManager.read, ToolManager.list_dir, ToolManager.write_file, ToolManager.edit_file]
