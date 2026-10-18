@@ -17,11 +17,12 @@ Ironically, I am not using AI except for helping me search documentation and occ
 - Ability to switch between models
 - Extremely basic tool call to read files
 - Tool to list directories, doesn't allow listing outside the project, can't list recursively for now
+- Tool to edit existing files
 
 ## TODO
 - Find a proper architecture so the project can grow in complexity without becoming spaghetti in only two commits
 - Safeguards for the read tool
-- Write tool (I'm thinking of just using some library to generate diffs and implement changes instead of reinventing the wheel here)
+- Write tool: still need to implement diffs (will use difflib) so user can approve or reject changes and still need to allow for creating new files
 - A "delegate" tool call or whatever people call that, so that an agent can start another session without polluting the main session's context
 - Allow different agents to use different models (e.g. main agent uses a general purpose model can call "delegate" to the coding agent, coding agent uses a model that is best at coding)
 
