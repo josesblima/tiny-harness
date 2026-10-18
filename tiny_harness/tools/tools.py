@@ -27,10 +27,9 @@ class ToolManager:
                     result.append(file.name + '/')
                 else:
                     result.append(file.name)
-            print(f'The agent requested a list of all files in {path}.\nThis is the result:\n{result}')
             return result
         else:
-            return f'The path "{path}" is not a valid path inside the current project.'
+            raise ToolError(f'The path "{path}" is not a valid path inside the current project.')
 
     @staticmethod
     def edit_file(path: str, old_str: str, new_str):

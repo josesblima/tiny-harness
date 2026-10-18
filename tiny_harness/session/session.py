@@ -3,6 +3,7 @@ from ollama import ChatResponse, Message
 from ollama import chat
 
 from tiny_harness.models.models import Model
+from tiny_harness.printer.printer import Printer
 from tiny_harness.tools.exceptions import ToolError
 from tiny_harness.tools.tools import ALL_TOOLS
 
@@ -29,9 +30,9 @@ class Session:
                     tools = self.tools
                 )
                 self.messages.append(response.message)
+                Printer.model_message(content=response.message.content)
 
                 if not response.message.tool_calls:
-                    print(response.message.content)
                     break
                 self._handle_tool_calls(tool_calls=response.message.tool_calls)
 
@@ -42,30 +43,41 @@ class Session:
         if user_input[0] != '/':
             return False
         if user_input == '/model':
-            print(f'You\'re currently using the model {self.model.value}\nTo switch to a different model select the appropriate number:')
+            Printer.info(content=f'You\'re currently using the model {self.model.value}\nTo switch to a different model select the appropriate number:')
             available_models = []
             for m in Model:
                 available_models.append(m)
-                print(f'{len(available_models)} :  {m}')
-            print('0 : Cancel')
-            choice = int(input())
+                Printer.info(content=f'{len(available_models)} :  {m.value}')
+            Printer.info(content='0 : Cancel')
+            try:
+                choice = int(input())
+            except ValueError:
+                Printer.error(content='Please select a number or 0 to cancel.')
+                return True
             if choice > 0 and choice <= len(available_models):
                 self.model = available_models[choice - 1]
-                print(f'you\'re now using the model {self.model.value}')
+                Printer.info(content=f'You\'re now using the model {self.model.value}')
                 return True
+            Printer.info(content="Cancelled.")
+            return True
         return False
 
     def _handle_tool_calls(self, tool_calls):
         for call in tool_calls:
+            Printer.tool_call(content=f'{call.function.name}({call.function.arguments})')
             fn = self.tools_dic.get(call.function.name)
             if fn is None:
                 result = f'The tool {call.function.name} doesn\'t exist.'
+                Printer.error(content=result)
             else:
                 try:
-                    result = fn(**call.function.arguments)
+                    result = str(fn(**call.function.arguments))
+                    Printer.tool_result(content=result)
                 except ToolError as e:
                     result = f'Error: {e}'
+                    Printer.error(content=result)
                 except Exception as e:
                     result = f'Unexpected Error: {e}'
-            self.messages.append(Message(role='tool', tool_name=call.function.name, content=str(result)))
+                    Printer.error(content=result)
+            self.messages.append(Message(role='tool', tool_name=call.function.name, content=result))
         
